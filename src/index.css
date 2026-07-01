@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-metallic text-jet font-sans antialiased;
+    background-attachment: fixed;
+  }
+  h1,h2,h3,h4,h5 { @apply font-display; }
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm
+           bg-gold-gradient text-jet font-bold text-sm
+           border border-gold-500 shadow-gold-sm
+           transition-all hover:brightness-110 hover:shadow-gold active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-black {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm
+           bg-jet text-white font-semibold text-sm
+           border border-jet-50
+           transition-all hover:bg-jet-50 active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-outline-gold {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2 rounded-sm
+           border border-gold-400 text-gold-500 font-semibold text-sm
+           transition-all hover:bg-gold-400 hover:text-jet active:scale-95;
+  }
+  .product-card {
+    @apply bg-white rounded-sm shadow-card overflow-hidden
+           transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1
+           border border-silver-200;
+  }
+  .product-card:hover .product-img { @apply scale-110; }
+  .product-img { @apply w-full h-full object-cover transition-transform duration-500; }
+  .tag-new {
+    @apply absolute top-2 right-2 px-2 py-0.5 text-xs font-bold
+           bg-gold-400 text-jet rounded-sm z-10;
+  }
+  .tag-sale {
+    @apply absolute top-2 right-2 px-2 py-0.5 text-xs font-bold
+           bg-alert text-white rounded-sm z-10;
+  }
+  .section-heading {
+    @apply text-xl font-bold text-jet font-display pb-2 mb-4
+           border-b-2 border-gold-400;
+  }
+  .nav-link {
+    @apply px-4 py-3 text-sm font-semibold text-silver-200 hover:text-gold-300
+           hover:bg-white/5 transition-colors cursor-pointer whitespace-nowrap;
+  }
+  .nav-link-active {
+    @apply px-4 py-3 text-sm font-semibold text-gold-400
+           border-b-2 border-gold-400 cursor-pointer whitespace-nowrap;
+  }
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-sm border border-silver-300
+           bg-white text-jet placeholder-silver-500
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent
+           transition-all;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #e8e8e8; }
+::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #b8952e; }
+
+/* number input cleanup */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+
+/* Metallic texture shimmer on header */
+.gold-header-bg {
+  background: linear-gradient(180deg, #e8c840 0%, #D4AF37 35%, #c9a227 65%, #a07820 100%);
+  box-shadow: inset 0 1px 0 rgba(255,240,120,0.5), inset 0 -2px 0 rgba(100,70,0,0.3), 0 2px 8px rgba(0,0,0,0.3);
+}
+.metallic-bg {
+  background: linear-gradient(160deg, #ececec 0%, #f6f6f6 25%, #e2e2e2 50%, #f0f0f0 75%, #e8e8e8 100%);
+}
+.silver-plate {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 50%, #f0f0f0 100%);
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.12), -1px -1px 3px rgba(255,255,255,0.9);
+}
