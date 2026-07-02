@@ -13,6 +13,7 @@ export interface Product {
   stock: number;
   featured: boolean;
   best_seller: boolean;
+  brand: string | null;
   created_at: string;
   updated_at: string;
 }

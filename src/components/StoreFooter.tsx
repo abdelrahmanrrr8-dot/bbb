@@ -39,10 +39,10 @@ export function StoreFooter() {
             <ul className="space-y-2 text-sm">
               {[
                 { label: 'الرئيسية', path: '/' },
-                { label: 'مفروشات', path: '/products?category=مفروشات' },
-                { label: 'أدوات منزلية', path: '/products?category=أدوات منزلية' },
-                { label: 'أجهزة كهربائية', path: '/products?category=أجهزة كهربائية' },
-                { label: 'عروض', path: '/products?sale=true' },
+                { label: 'مفروشات', path: '/shop?category=مفروشات' },
+                { label: 'أدوات منزلية', path: '/shop?category=أدوات منزلية' },
+                { label: 'أجهزة كهربائية', path: '/shop?category=أجهزة كهربائية' },
+                { label: 'عروض', path: '/shop?sale=true' },
               ].map((link) => (
                 <li key={link.label}>
                   <button onClick={() => navigate(link.path)} className="text-silver-400 hover:text-gold-400 transition-colors">

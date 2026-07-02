@@ -13,9 +13,7 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | null>(null);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem(STORAGE_KEY) === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem(STORAGE_KEY) === 'true');
 
   const login = useCallback((username: string, password: string) => {
     if (username === ADMIN_USER && password === ADMIN_PASS) {

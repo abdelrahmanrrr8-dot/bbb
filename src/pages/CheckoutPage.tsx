@@ -18,7 +18,7 @@ export function CheckoutPage() {
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
         <h2 className="text-2xl font-bold text-jet mb-2">سلتك فارغة</h2>
         <p className="text-silver-500 mb-6">أضف منتجات قبل إتمام الطلب</p>
-        <button onClick={() => navigate('/products')} className="btn-gold">تصفح المنتجات</button>
+        <button onClick={() => navigate('/shop')} className="btn-gold">تصفح المنتجات</button>
       </div>
     );
   }
@@ -135,7 +135,7 @@ export function CheckoutPage() {
                 <span>الإجمالي</span><span className="text-alert">{formatPrice(totalPrice)}</span>
               </div>
             </div>
-            <button onClick={() => navigate('/products')} className="inline-flex items-center gap-1 text-sm text-silver-500 hover:text-gold-500 mt-4 transition-colors">
+            <button onClick={() => navigate('/shop')} className="inline-flex items-center gap-1 text-sm text-silver-500 hover:text-gold-500 mt-4 transition-colors">
               <ArrowRight className="w-4 h-4" /> متابعة التسوق
             </button>
           </div>

@@ -5,8 +5,9 @@ import { StoreHeader } from './components/StoreHeader';
 import { StoreFooter } from './components/StoreFooter';
 import { CartDrawer } from './components/CartDrawer';
 import { HomePage } from './pages/HomePage';
-import { ProductsPage } from './pages/ProductsPage';
+import { ShopPage } from './pages/ShopPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
+import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
@@ -18,7 +19,7 @@ function AdminRoute({ page }: { page: 'dashboard' | 'products' | 'orders' }) {
   const { navigate } = useRouter();
 
   if (!isAuthenticated) {
-    setTimeout(() => navigate('/control-panel'), 0);
+    setTimeout(() => navigate('/admin/login'), 0);
     return <AdminLoginPage />;
   }
 
@@ -31,8 +32,8 @@ function AppContent() {
   const { route, navigate } = useRouter();
 
   // Admin routes
-  if (route.path === '/control-panel') return <AdminLoginPage />;
-  if (route.path.startsWith('/control-panel/')) {
+  if (route.path === '/admin' || route.path === '/admin/login') return <AdminLoginPage />;
+  if (route.path.startsWith('/admin/')) {
     const page = route.path.split('/')[2];
     if (page === 'dashboard') return <AdminRoute page="dashboard" />;
     if (page === 'products') return <AdminRoute page="products" />;
@@ -43,13 +44,14 @@ function AppContent() {
   // Storefront routes
   return (
     <div className="min-h-screen flex flex-col">
-      <StoreHeader onCartClick={() => navigate('/checkout')} />
+      <StoreHeader onCartClick={() => navigate('/cart')} />
       <main className="flex-1">
         {route.path === '/' && <HomePage />}
-        {route.path === '/products' && <ProductsPage />}
-        {route.path.startsWith('/product/') && <ProductDetailPage id={route.path.split('/')[2]} />}
+        {(route.path === '/shop' || route.path === '/products') && <ShopPage />}
+        {route.path === '/cart' && <CartPage />}
         {route.path === '/checkout' && <CheckoutPage />}
-        {!['/', '/products', '/checkout'].includes(route.path) && !route.path.startsWith('/product/') && (
+        {route.path.startsWith('/product/') && <ProductDetailPage id={route.path.split('/')[2]} />}
+        {!['/', '/shop', '/products', '/cart', '/checkout'].includes(route.path) && !route.path.startsWith('/product/') && (
           <div className="max-w-2xl mx-auto px-4 py-20 text-center">
             <h2 className="text-3xl font-bold text-jet mb-2">404</h2>
             <p className="text-silver-500 mb-6">الصفحة غير موجودة</p>

@@ -15,7 +15,7 @@ export function AdminProductsPage() {
   const [error, setError] = useState('');
 
   const blankForm = {
-    name: '', description: '', price: '', old_price: '',
+    name: '', description: '', price: '', old_price: '', brand: '',
     category: 'مفروشات' as Category, image_url: '',
     stock: '', featured: false, best_seller: false,
   };
@@ -42,7 +42,7 @@ export function AdminProductsPage() {
     setEditingProduct(p);
     setForm({
       name: p.name, description: p.description || '', price: p.price.toString(),
-      old_price: p.old_price?.toString() || '', category: p.category,
+      old_price: p.old_price?.toString() || '', brand: p.brand || '', category: p.category,
       image_url: p.image_url || '', stock: p.stock.toString(),
       featured: p.featured, best_seller: p.best_seller,
     });
@@ -60,6 +60,7 @@ export function AdminProductsPage() {
       name: form.name.trim(), description: form.description.trim() || null,
       price: parseFloat(form.price),
       old_price: form.old_price ? parseFloat(form.old_price) : null,
+      brand: form.brand.trim() || null,
       category: form.category, image_url: form.image_url.trim() || null,
       stock: parseInt(form.stock), featured: form.featured, best_seller: form.best_seller,
     };
@@ -196,6 +197,10 @@ export function AdminProductsPage() {
                     {CATEGORIES.map((cat) => <option key={cat.key} value={cat.key}>{cat.label}</option>)}
                   </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-silver-700 mb-1.5">العلامة التجارية</label>
+                <input type="text" value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} className="input-field" placeholder="مثال: جودة هوم" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-silver-700 mb-1.5">رابط الصورة</label>

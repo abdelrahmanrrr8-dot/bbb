@@ -14,7 +14,7 @@ export function AdminLoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (login(username, password)) {
-      navigate('/control-panel/dashboard');
+      navigate('/admin/dashboard');
     } else {
       setError('اسم المستخدم أو كلمة المرور غير صحيحة');
     }

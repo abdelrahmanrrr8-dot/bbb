@@ -14,12 +14,12 @@ export function AdminLayout({ children, activePage }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
-    { key: 'dashboard', label: 'لوحة الإحصائيات', icon: LayoutDashboard, path: '/control-panel/dashboard' },
-    { key: 'products', label: 'إدارة المنتجات', icon: Package, path: '/control-panel/products' },
-    { key: 'orders', label: 'إدارة الطلبات', icon: ClipboardList, path: '/control-panel/orders' },
+    { key: 'dashboard', label: 'لوحة الإحصائيات', icon: LayoutDashboard, path: '/admin/dashboard' },
+    { key: 'products', label: 'إدارة المنتجات', icon: Package, path: '/admin/products' },
+    { key: 'orders', label: 'إدارة الطلبات', icon: ClipboardList, path: '/admin/orders' },
   ] as const;
 
-  const handleLogout = () => { logout(); navigate('/control-panel'); };
+  const handleLogout = () => { logout(); navigate('/admin/login'); };
 
   return (
     <div className="min-h-screen bg-silver-100 flex">

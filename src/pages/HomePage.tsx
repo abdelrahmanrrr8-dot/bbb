@@ -18,23 +18,23 @@ export function HomePage() {
     {
       title: 'مفروشات تحول حلمك إلى حقيقة',
       subtitle: 'تشكيلة فاخرة من الأرائك والسرر والسجاد بأرقى التصاميم',
-      image: 'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
       cta: 'تسوق الآن',
-      link: '/products?category=مفروشات',
+      link: '/shop?category=مفروشات',
     },
     {
       title: 'أدوات منزلية بأناقة لا مثيل لها',
       subtitle: 'أواني طبخ وأطقم عشاء بجودة عالية وتصاميم عصرية',
-      image: 'https://images.pexels.com/photos/4226806/pexels-photo-4226806.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=1200',
       cta: 'اكتشف المجموعة',
-      link: '/products?category=أدوات منزلية',
+      link: '/shop?category=أدوات منزلية',
     },
     {
       title: 'أجهزة كهربائية بأحدث التقنيات',
       subtitle: 'ثلاجات وغسالات ومكيفات من أفضل العلامات التجارية',
-      image: 'https://images.pexels.com/photos/265690/pexels-photo-265690.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      image: 'https://images.unsplash.com/photo-1571175432267-ef0260be68d5?q=80&w=1200',
       cta: 'تصفح الأجهزة',
-      link: '/products?category=أجهزة كهربائية',
+      link: '/shop?category=أجهزة كهربائية',
     },
   ];
 
@@ -68,9 +68,9 @@ export function HomePage() {
   };
 
   const categoryCards: { key: Category; desc: string; image: string }[] = [
-    { key: 'مفروشات', desc: 'أرائك، سرر، سجاد وستائر', image: 'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg?auto=compress&cs=tinysrgb&w=600' },
-    { key: 'أدوات منزلية', desc: 'أواني طبخ، أطباق وأدوات المطبخ', image: 'https://images.pexels.com/photos/4226806/pexels-photo-4226806.jpeg?auto=compress&cs=tinysrgb&w=600' },
-    { key: 'أجهزة كهربائية', desc: 'ثلاجات، غسالات ومكيفات', image: 'https://images.pexels.com/photos/265690/pexels-photo-265690.jpeg?auto=compress&cs=tinysrgb&w=600' },
+    { key: 'مفروشات', desc: 'أرائك، سرر، سجاد وستائر', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=600' },
+    { key: 'أدوات منزلية', desc: 'أواني طبخ، أطباق وأدوات المطبخ', image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=600' },
+    { key: 'أجهزة كهربائية', desc: 'ثلاجات، غسالات ومكيفات', image: 'https://images.unsplash.com/photo-1571175432267-ef0260be68d5?q=80&w=600' },
   ];
 
   return (
@@ -140,7 +140,7 @@ export function HomePage() {
                 <span className="w-1 h-5 bg-gold-400 rounded-full" />
                 أحدث المنتجات
               </h3>
-              <button onClick={() => navigate('/products')} className="text-xs text-gold-500 hover:text-gold-600 font-medium">
+              <button onClick={() => navigate('/shop')} className="text-xs text-gold-500 hover:text-gold-600 font-medium">
                 عرض الكل
               </button>
             </div>
@@ -214,7 +214,7 @@ export function HomePage() {
           {categoryCards.map((cat) => (
             <button
               key={cat.key}
-              onClick={() => navigate(`/products?category=${cat.key}`)}
+              onClick={() => navigate(`/shop?category=${cat.key}`)}
               className="group relative overflow-hidden rounded-sm shadow-card hover:shadow-card-hover transition-all hover:-translate-y-1 h-48"
             >
               <img
