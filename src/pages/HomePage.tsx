@@ -36,9 +36,9 @@ export function HomePage() {
   };
 
   const categoryCards = [
-    { key: 'مفروشات', desc: 'أرائك، سرر، سجاد وستائر', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=600' },
-    { key: 'أدوات منزلية', desc: 'أواني طبخ، أطباق وأدوات المطبخ', image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=600' },
-    { key: 'أجهزة كهربائية', desc: 'ثلاجات، غسالات ومكيفات', image: 'https://images.unsplash.com/photo-1571175432267-ef0260be68d5?q=80&w=600' },
+    { key: 'مفروشات', desc: 'أرائك، سرر، سجاد وستائر', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1200' },
+    { key: 'أدوات منزلية', desc: 'أواني طبخ، أطباق وأدوات المطبخ', image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1200' },
+    { key: 'أجهزة كهربائية', desc: 'ثلاجات، غسالات ومكيفات', image: 'https://images.unsplash.com/photo-1719937226655-6a429b717f6b?auto=format&fit=crop&q=80&w=1200' },
   ] as const;
 
   const whyChooseUs = [

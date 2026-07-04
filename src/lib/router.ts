@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 export type Route = {
   path: string;
@@ -7,9 +7,6 @@ export type Route = {
 
 function parseLocation(): Route {
   let path = window.location.pathname || '/';
-  const queryIndex = path.indexOf('?');
-  if (queryIndex >= 0) path = path.slice(0, queryIndex);
-
   const search = window.location.search;
   const params: Record<string, string> = {};
   if (search) {
@@ -21,21 +18,39 @@ function parseLocation(): Route {
   return { path, params };
 }
 
-export function useRouter() {
-  const [route, setRoute] = useState<Route>(parseLocation);
+// Global singleton store so all components share the same route state
+let currentRoute: Route = parseLocation();
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    const handler = () => {
-      setRoute(parseLocation());
-      window.scrollTo(0, 0);
-    };
-    window.addEventListener('popstate', handler);
-    return () => window.removeEventListener('popstate', handler);
-  }, []);
+function emitChange() {
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot(): Route {
+  return currentRoute;
+}
+
+// Listen to popstate (browser back/forward)
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    currentRoute = parseLocation();
+    emitChange();
+    window.scrollTo(0, 0);
+  });
+}
+
+export function useRouter() {
+  const route = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const navigate = useCallback((path: string) => {
     window.history.pushState({}, '', path);
-    setRoute(parseLocation());
+    currentRoute = parseLocation();
+    emitChange();
     window.scrollTo(0, 0);
   }, []);
 
