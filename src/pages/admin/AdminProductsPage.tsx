@@ -39,7 +39,7 @@ export function AdminProductsPage() {
     setShowModal(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.price || !form.stock) { setError('يرجى ملء جميع الحقول المطلوبة'); return; }
     setSaving(true);
@@ -59,12 +59,18 @@ export function AdminProductsPage() {
     };
 
     try {
+      let success = false;
       if (editingProduct) {
-        updateProduct(editingProduct.id, payload);
+        success = await updateProduct(editingProduct.id, payload);
       } else {
-        addProduct(payload);
+        const result = await addProduct(payload);
+        success = !!result;
       }
-      setShowModal(false);
+      if (success) {
+        setShowModal(false);
+      } else {
+        setError('حدث خطأ أثناء الحفظ في قاعدة البيانات.');
+      }
     } catch (err) {
       setError('حدث خطأ أثناء الحفظ.');
       console.error(err);
@@ -73,9 +79,9 @@ export function AdminProductsPage() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteTarget) return;
-    deleteProduct(deleteTarget.id);
+    await deleteProduct(deleteTarget.id);
     setDeleteTarget(null);
   };
 

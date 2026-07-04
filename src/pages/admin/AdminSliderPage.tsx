@@ -9,6 +9,7 @@ export function AdminSliderPage() {
   const [editingSlide, setEditingSlide] = useState<Slide | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Slide | null>(null);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const blankForm = { title: '', subtitle: '', image: '', cta: 'تسوق الآن', link: '/shop' };
   const [form, setForm] = useState(blankForm);
@@ -27,25 +28,34 @@ export function AdminSliderPage() {
     setShowModal(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim() || !form.image.trim()) { setError('يرجى إدخال العنوان ورابط الصورة'); return; }
+    setSaving(true);
     try {
+      let success = false;
       if (editingSlide) {
-        updateSlide(editingSlide.id, form);
+        success = await updateSlide(editingSlide.id, form);
       } else {
-        addSlide(form);
+        const result = await addSlide(form);
+        success = !!result;
       }
-      setShowModal(false);
+      if (success) {
+        setShowModal(false);
+      } else {
+        setError('حدث خطأ أثناء الحفظ في قاعدة البيانات.');
+      }
     } catch (err) {
       setError('حدث خطأ أثناء الحفظ.');
       console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteTarget) return;
-    deleteSlide(deleteTarget.id);
+    await deleteSlide(deleteTarget.id);
     setDeleteTarget(null);
   };
 
@@ -121,7 +131,7 @@ export function AdminSliderPage() {
               </div>
               {error && <p className="text-alert text-sm bg-red-50 p-3 rounded-sm flex items-center gap-2"><AlertCircle className="w-4 h-4 flex-shrink-0" />{error}</p>}
               <div className="flex gap-3 pt-2">
-                <button type="submit" className="btn-gold flex-1">{editingSlide ? 'حفظ التعديلات' : 'إضافة الشريحة'}</button>
+                <button type="submit" disabled={saving} className="btn-gold flex-1">{saving ? 'جاري الحفظ...' : editingSlide ? 'حفظ التعديلات' : 'إضافة الشريحة'}</button>
                 <button type="button" onClick={() => setShowModal(false)} className="btn-black">إلغاء</button>
               </div>
             </form>

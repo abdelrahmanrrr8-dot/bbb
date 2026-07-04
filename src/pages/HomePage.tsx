@@ -39,7 +39,10 @@ export function HomePage() {
     { key: 'مفروشات', desc: 'أرائك، سرر، سجاد وستائر', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1200' },
     { key: 'أدوات منزلية', desc: 'أواني طبخ، أطباق وأدوات المطبخ', image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1200' },
     { key: 'أجهزة كهربائية', desc: 'ثلاجات، غسالات ومكيفات', image: 'https://images.unsplash.com/photo-1719937226655-6a429b717f6b?auto=format&fit=crop&q=80&w=1200' },
-  ] as const;
+  ].map((cat) => {
+    const slide = slides.find((s) => s.link.includes(`category=${cat.key}`));
+    return slide ? { ...cat, image: slide.image } : cat;
+  });
 
   const whyChooseUs = [
     { icon: Award, title: 'أجهزة عالية الجودة', desc: 'منتجات مختارة بعناية من أفضل العلامات التجارية العالمية' },
