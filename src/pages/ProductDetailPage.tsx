@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ShoppingCart, Minus, Plus, ArrowRight, Check, Truck, ShieldCheck, RotateCcw, Star, Package } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { Product, formatPrice, isOnSale } from '../lib/types';
+import { useProductStore } from '../lib/productStore';
+import { formatPrice, isOnSale } from '../lib/types';
 import { useRouter } from '../lib/router';
 import { useCart } from '../lib/cart';
 import { ProductCard } from '../components/ProductCard';
@@ -10,35 +10,11 @@ import { QuickViewModal } from '../components/QuickViewModal';
 export function ProductDetailPage({ id }: { id: string }) {
   const { navigate } = useRouter();
   const { addToCart } = useCart();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [related, setRelated] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, getProduct } = useProductStore();
+  const product = getProduct(id);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  const [quickView, setQuickView] = useState<Product | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    supabase.from('products').select('*').eq('id', id).single().then(({ data }) => {
-      setProduct(data);
-      setLoading(false);
-      if (data) {
-        supabase.from('products').select('*').eq('category', data.category).neq('id', id).limit(4)
-          .then(({ data: rel }) => setRelated(rel || []));
-      }
-    });
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-2 gap-8 animate-pulse">
-          <div className="aspect-square bg-silver-100 rounded-sm" />
-          <div className="space-y-4"><div className="h-8 bg-silver-100 rounded w-3/4" /><div className="h-6 bg-silver-100 rounded w-1/4" /><div className="h-24 bg-silver-100 rounded" /></div>
-        </div>
-      </div>
-    );
-  }
+  const [quickView, setQuickView] = useState<typeof products[0] | null>(null);
 
   if (!product) {
     return (
@@ -50,6 +26,7 @@ export function ProductDetailPage({ id }: { id: string }) {
   }
 
   const sale = isOnSale(product);
+  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 animate-fade-in">
@@ -83,7 +60,6 @@ export function ProductDetailPage({ id }: { id: string }) {
 
           {product.description && <p className="text-silver-600 leading-relaxed mb-6">{product.description}</p>}
 
-          {/* Specifications */}
           <div className="bg-silver-50 rounded-sm p-4 mb-6 space-y-2">
             <h3 className="text-sm font-bold text-jet mb-2">المواصفات</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">

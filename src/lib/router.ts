@@ -5,32 +5,38 @@ export type Route = {
   params: Record<string, string>;
 };
 
-function parseHash(): Route {
-  const hash = window.location.hash.slice(1) || '/';
-  const [path, queryString] = hash.split('?');
+function parseLocation(): Route {
+  let path = window.location.pathname || '/';
+  const queryIndex = path.indexOf('?');
+  if (queryIndex >= 0) path = path.slice(0, queryIndex);
+
+  const search = window.location.search;
   const params: Record<string, string> = {};
-  if (queryString) {
-    new URLSearchParams(queryString).forEach((v, k) => {
+  if (search) {
+    new URLSearchParams(search).forEach((v, k) => {
       params[k] = v;
     });
   }
-  return { path: path || '/', params };
+  if (!path.startsWith('/')) path = '/' + path;
+  return { path, params };
 }
 
 export function useRouter() {
-  const [route, setRoute] = useState<Route>(parseHash);
+  const [route, setRoute] = useState<Route>(parseLocation);
 
   useEffect(() => {
     const handler = () => {
-      setRoute(parseHash());
+      setRoute(parseLocation());
       window.scrollTo(0, 0);
     };
-    window.addEventListener('hashchange', handler);
-    return () => window.removeEventListener('hashchange', handler);
+    window.addEventListener('popstate', handler);
+    return () => window.removeEventListener('popstate', handler);
   }, []);
 
   const navigate = useCallback((path: string) => {
-    window.location.hash = path;
+    window.history.pushState({}, '', path);
+    setRoute(parseLocation());
+    window.scrollTo(0, 0);
   }, []);
 
   return { route, navigate };

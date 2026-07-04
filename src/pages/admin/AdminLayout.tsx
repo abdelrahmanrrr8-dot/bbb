@@ -1,11 +1,11 @@
 import { ReactNode, useState } from 'react';
-import { LayoutDashboard, Package, ClipboardList, LogOut, Menu, X, Store } from 'lucide-react';
+import { LayoutDashboard, Package, ClipboardList, LogOut, Menu, X, Store, Image } from 'lucide-react';
 import { useAdmin } from '../../lib/admin';
 import { useRouter } from '../../lib/router';
 
 interface AdminLayoutProps {
   children: ReactNode;
-  activePage: 'dashboard' | 'products' | 'orders';
+  activePage: 'dashboard' | 'products' | 'orders' | 'slider';
 }
 
 export function AdminLayout({ children, activePage }: AdminLayoutProps) {
@@ -16,6 +16,7 @@ export function AdminLayout({ children, activePage }: AdminLayoutProps) {
   const menuItems = [
     { key: 'dashboard', label: 'لوحة الإحصائيات', icon: LayoutDashboard, path: '/admin/dashboard' },
     { key: 'products', label: 'إدارة المنتجات', icon: Package, path: '/admin/products' },
+    { key: 'slider', label: 'إدارة السلايدر', icon: Image, path: '/admin/slider' },
     { key: 'orders', label: 'إدارة الطلبات', icon: ClipboardList, path: '/admin/orders' },
   ] as const;
 
@@ -39,9 +40,7 @@ export function AdminLayout({ children, activePage }: AdminLayoutProps) {
         <nav className="flex-1 p-3 space-y-1">
           {menuItems.map((item) => (
             <button key={item.key} onClick={() => navigate(item.path)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm font-medium transition-all ${
-                activePage === item.key ? 'bg-gold-400 text-jet' : 'text-silver-200 hover:bg-jet-50'
-              }`}>
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm font-medium transition-all ${activePage === item.key ? 'bg-gold-400 text-jet' : 'text-silver-200 hover:bg-jet-50'}`}>
               <item.icon className="w-5 h-5" />{item.label}
             </button>
           ))}
@@ -73,9 +72,7 @@ export function AdminLayout({ children, activePage }: AdminLayoutProps) {
             <nav className="flex-1 p-3 space-y-1">
               {menuItems.map((item) => (
                 <button key={item.key} onClick={() => { navigate(item.path); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm font-medium transition-all ${
-                    activePage === item.key ? 'bg-gold-400 text-jet' : 'text-silver-200 hover:bg-jet-50'
-                  }`}>
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm font-medium transition-all ${activePage === item.key ? 'bg-gold-400 text-jet' : 'text-silver-200 hover:bg-jet-50'}`}>
                   <item.icon className="w-5 h-5" />{item.label}
                 </button>
               ))}

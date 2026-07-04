@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { SlidersHorizontal, X, Search } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { useProductStore } from '../lib/productStore';
 import { Product, CATEGORIES, Category } from '../lib/types';
 import { useRouter } from '../lib/router';
 import { ProductCard } from '../components/ProductCard';
@@ -8,11 +8,9 @@ import { QuickViewModal } from '../components/QuickViewModal';
 
 export function ShopPage() {
   const { route, navigate } = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products } = useProductStore();
   const [showFilters, setShowFilters] = useState(false);
   const [quickView, setQuickView] = useState<Product | null>(null);
-  const [brands, setBrands] = useState<string[]>([]);
 
   const selectedCategory = route.params.category as Category | undefined;
   const searchQuery = route.params.q || '';
@@ -23,29 +21,24 @@ export function ShopPage() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
-    let query = supabase.from('products').select('*');
-    if (selectedCategory) query = query.eq('category', selectedCategory);
-    if (searchQuery) query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
-    if (saleOnly) query = query.not('old_price', 'is', null);
-    query.order('created_at', { ascending: false }).then(({ data }) => {
-      setProducts(data || []);
-      const uniqueBrands = [...new Set((data || []).map((p) => p.brand).filter(Boolean))] as string[];
-      setBrands(uniqueBrands);
-      setLoading(false);
-    });
-  }, [selectedCategory, searchQuery, saleOnly]);
+  const brands = useMemo(() => {
+    const uniqueBrands = [...new Set(products.map((p) => p.brand).filter(Boolean))] as string[];
+    return uniqueBrands;
+  }, [products]);
 
   const sortedAndFiltered = useMemo(() => {
     let result = [...products];
+    if (selectedCategory) result = result.filter((p) => p.category === selectedCategory);
+    if (searchQuery) result = result.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || (p.description || '').toLowerCase().includes(searchQuery.toLowerCase()));
+    if (saleOnly) result = result.filter((p) => p.old_price !== null && p.old_price > p.price);
     if (maxPrice !== null) result = result.filter((p) => p.price <= maxPrice);
     if (inStockOnly) result = result.filter((p) => p.stock > 0);
     if (selectedBrand) result = result.filter((p) => p.brand === selectedBrand);
+    if (sort === 'newest') result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     if (sort === 'price-asc') result.sort((a, b) => a.price - b.price);
     if (sort === 'price-desc') result.sort((a, b) => b.price - a.price);
     return result;
-  }, [products, sort, maxPrice, inStockOnly, selectedBrand]);
+  }, [products, selectedCategory, searchQuery, saleOnly, sort, maxPrice, inStockOnly, selectedBrand]);
 
   const setCategory = (cat: Category | undefined) => {
     if (cat) navigate(`/shop?category=${cat}`);
@@ -117,7 +110,7 @@ export function ShopPage() {
             <button onClick={() => setShowFilters(true)} className="md:hidden flex items-center gap-2 px-4 py-2 rounded-sm border border-silver-300 text-jet font-medium text-sm">
               <SlidersHorizontal className="w-4 h-4" />تصفية
             </button>
-            <span className="text-sm text-silver-500">{loading ? '...' : `${sortedAndFiltered.length} منتج`}</span>
+            <span className="text-sm text-silver-500">{sortedAndFiltered.length} منتج</span>
             <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="px-3 py-2 rounded-sm border border-silver-300 bg-white text-jet text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
               <option value="newest">الأحدث</option>
               <option value="price-asc">السعر: من الأقل للأعلى</option>
@@ -125,11 +118,7 @@ export function ShopPage() {
             </select>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[...Array(8)].map((_, i) => <div key={i} className="product-card p-3 animate-pulse"><div className="aspect-square bg-silver-100 rounded-sm mb-2" /><div className="h-3 bg-silver-100 rounded mb-2" /><div className="h-3 bg-silver-100 rounded w-2/3" /></div>)}
-            </div>
-          ) : sortedAndFiltered.length === 0 ? (
+          {sortedAndFiltered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="w-20 h-20 rounded-full bg-silver-200 flex items-center justify-center mb-4"><Search className="w-10 h-10 text-silver-400" /></div>
               <h3 className="text-lg font-bold text-jet mb-1">لا توجد منتجات</h3>

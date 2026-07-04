@@ -1,12 +1,14 @@
 import { useEffect, useState, useMemo } from 'react';
 import { TrendingUp, ShoppingBag, Package, AlertTriangle, ArrowLeft, BarChart3, PieChart } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useProductStore } from '../../lib/productStore';
 import { formatPrice, Order, CATEGORIES } from '../../lib/types';
 import { useRouter } from '../../lib/router';
 import { AdminLayout } from './AdminLayout';
 
 export function AdminDashboardPage() {
   const { navigate } = useRouter();
+  const { products } = useProductStore();
   const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalProducts: 0, outOfStock: 0 });
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,16 +16,11 @@ export function AdminDashboardPage() {
   const [categoryData, setCategoryData] = useState<{ name: string; count: number; color: string }[]>([]);
 
   useEffect(() => {
-    Promise.all([
-      supabase.from('orders').select('total, status, created_at'),
-      supabase.from('products').select('id, category, stock'),
-    ]).then(([ordersRes, productsRes]) => {
-      const orders = ordersRes.data || [];
-      const products = productsRes.data || [];
-
+    supabase.from('orders').select('total, status, created_at').then(({ data: orders }) => {
+      const orderList = orders || [];
       setStats({
-        totalSales: orders.reduce((sum, o) => sum + Number(o.total), 0),
-        totalOrders: orders.length,
+        totalSales: orderList.reduce((sum, o) => sum + Number(o.total), 0),
+        totalOrders: orderList.length,
         totalProducts: products.length,
         outOfStock: products.filter((p) => p.stock === 0).length,
       });
@@ -34,7 +31,7 @@ export function AdminDashboardPage() {
       for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const monthName = d.toLocaleDateString('ar-EG', { month: 'short' });
-        const monthSales = orders
+        const monthSales = orderList
           .filter((o) => {
             const od = new Date(o.created_at);
             return od.getFullYear() === d.getFullYear() && od.getMonth() === d.getMonth();
@@ -58,7 +55,7 @@ export function AdminDashboardPage() {
 
     supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5)
       .then(({ data }) => setRecentOrders(data || []));
-  }, []);
+  }, [products]);
 
   const maxSales = useMemo(() => Math.max(...monthlyData.map((d) => d.sales), 1), [monthlyData]);
   const totalCatCount = useMemo(() => categoryData.reduce((sum, c) => sum + c.count, 0) || 1, [categoryData]);
@@ -126,7 +123,6 @@ export function AdminDashboardPage() {
             توزيع الأقسام
           </h2>
           <div className="flex flex-col items-center gap-4">
-            {/* SVG Donut chart */}
             <svg viewBox="0 0 200 200" className="w-40 h-40">
               {(() => {
                 let offset = 0;
@@ -134,15 +130,9 @@ export function AdminDashboardPage() {
                   const pct = cat.count / totalCatCount;
                   const dash = pct * 502;
                   const circle = (
-                    <circle
-                      key={i}
-                      cx="100" cy="100" r="80" fill="none"
-                      stroke={cat.color} strokeWidth="30"
-                      strokeDasharray={`${dash} 502`}
-                      strokeDashoffset={-offset}
-                      transform="rotate(-90 100 100)"
-                      className="transition-all duration-500"
-                    />
+                    <circle key={i} cx="100" cy="100" r="80" fill="none" stroke={cat.color} strokeWidth="30"
+                      strokeDasharray={`${dash} 502`} strokeDashoffset={-offset}
+                      transform="rotate(-90 100 100)" className="transition-all duration-500" />
                   );
                   offset += dash;
                   return circle;
@@ -151,7 +141,6 @@ export function AdminDashboardPage() {
               <text x="100" y="95" textAnchor="middle" className="fill-jet text-2xl font-bold">{totalCatCount}</text>
               <text x="100" y="115" textAnchor="middle" className="fill-silver-500 text-xs">منتج</text>
             </svg>
-            {/* Legend */}
             <div className="w-full space-y-2">
               {categoryData.map((cat, i) => (
                 <div key={i} className="flex items-center justify-between text-sm">

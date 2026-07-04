@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus, Edit2, Trash2, X, Search, AlertCircle } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { useProductStore } from '../../lib/productStore';
 import { Product, CATEGORIES, Category, formatPrice } from '../../lib/types';
 import { AdminLayout } from './AdminLayout';
 
 export function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, addProduct, updateProduct, deleteProduct } = useProductStore();
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -20,16 +19,6 @@ export function AdminProductsPage() {
     stock: '', featured: false, best_seller: false,
   };
   const [form, setForm] = useState(blankForm);
-
-  const fetchProducts = () => {
-    setLoading(true);
-    supabase.from('products').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      setProducts(data || []);
-      setLoading(false);
-    });
-  };
-
-  useEffect(() => { fetchProducts(); }, []);
 
   const openAddModal = () => {
     setEditingProduct(null);
@@ -50,31 +39,32 @@ export function AdminProductsPage() {
     setShowModal(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.price || !form.stock) { setError('يرجى ملء جميع الحقول المطلوبة'); return; }
     setSaving(true);
     setError('');
 
     const payload = {
-      name: form.name.trim(), description: form.description.trim() || null,
+      name: form.name.trim(),
+      description: form.description.trim() || null,
       price: parseFloat(form.price),
       old_price: form.old_price ? parseFloat(form.old_price) : null,
       brand: form.brand.trim() || null,
-      category: form.category, image_url: form.image_url.trim() || null,
-      stock: parseInt(form.stock), featured: form.featured, best_seller: form.best_seller,
+      category: form.category,
+      image_url: form.image_url.trim() || null,
+      stock: parseInt(form.stock),
+      featured: form.featured,
+      best_seller: form.best_seller,
     };
 
     try {
       if (editingProduct) {
-        const { error: e } = await supabase.from('products').update(payload).eq('id', editingProduct.id);
-        if (e) throw e;
+        updateProduct(editingProduct.id, payload);
       } else {
-        const { error: e } = await supabase.from('products').insert(payload);
-        if (e) throw e;
+        addProduct(payload);
       }
       setShowModal(false);
-      fetchProducts();
     } catch (err) {
       setError('حدث خطأ أثناء الحفظ.');
       console.error(err);
@@ -83,11 +73,10 @@ export function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deleteTarget) return;
-    await supabase.from('products').delete().eq('id', deleteTarget.id);
+    deleteProduct(deleteTarget.id);
     setDeleteTarget(null);
-    fetchProducts();
   };
 
   const filtered = products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
@@ -99,9 +88,7 @@ export function AdminProductsPage() {
           <h1 className="text-2xl font-bold text-jet">إدارة المنتجات</h1>
           <p className="text-silver-500 text-sm mt-1">{products.length} منتج في المتجر</p>
         </div>
-        <button onClick={openAddModal} className="btn-gold">
-          <Plus className="w-5 h-5" />إضافة منتج
-        </button>
+        <button onClick={openAddModal} className="btn-gold"><Plus className="w-5 h-5" />إضافة منتج</button>
       </div>
 
       <div className="bg-white rounded-sm shadow-card p-4 mb-4">
@@ -112,9 +99,7 @@ export function AdminProductsPage() {
       </div>
 
       <div className="bg-white rounded-sm shadow-card overflow-hidden">
-        {loading ? (
-          <div className="p-8 space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-silver-100 rounded-sm animate-pulse" />)}</div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <p className="text-silver-500 text-center py-12">لا توجد منتجات</p>
         ) : (
           <div className="overflow-x-auto">
@@ -141,9 +126,7 @@ export function AdminProductsPage() {
                     <td className="p-4 text-sm text-silver-600">{p.category}</td>
                     <td className="p-4 text-sm font-semibold text-alert">{formatPrice(p.price)}</td>
                     <td className="p-4 text-sm text-silver-600">{p.stock}</td>
-                    <td className="p-4">
-                      {p.featured ? <span className="px-2 py-1 rounded-sm bg-gold-50 text-gold-600 text-xs font-medium">نعم</span> : <span className="text-silver-400 text-xs">لا</span>}
-                    </td>
+                    <td className="p-4">{p.featured ? <span className="px-2 py-1 rounded-sm bg-gold-50 text-gold-600 text-xs font-medium">نعم</span> : <span className="text-silver-400 text-xs">لا</span>}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => openEditModal(p)} className="p-2 rounded-sm bg-silver-50 text-silver-700 hover:bg-silver-100 transition-colors"><Edit2 className="w-4 h-4" /></button>
